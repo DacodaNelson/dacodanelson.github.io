@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1894.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 37.3px Helvetica; color: #000000; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 10.7px 0.0px; font: 14.7px Calibri; color: #000000; -webkit-text-stroke: #000000}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #610004; -webkit-text-stroke: #610004; background-color: #ffffff}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #6000d2; -webkit-text-stroke: #6000d2; background-color: #ffffff}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #f8100c; -webkit-text-stroke: #f8100c; background-color: #ffffff}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #0000ff; -webkit-text-stroke: #0000ff; background-color: #ffffff}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #000065; -webkit-text-stroke: #000065; background-color: #ffffff}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #000000; -webkit-text-stroke: #000000; background-color: #ffffff}
+    span.s1 {font-kerning: none}
+    span.s2 {font-kerning: none; color: #f8100c; -webkit-text-stroke: 0px #f8100c}
+    span.s3 {font-kerning: none; color: #000000; -webkit-text-stroke: 0px #000000}
+    span.s4 {font-kerning: none; color: #878787; -webkit-text-stroke: 0px #878787}
+    span.s5 {font-kerning: none; color: #0000ff; -webkit-text-stroke: 0px #0000ff}
+    span.s6 {font-kerning: none; color: rgba(0, 0, 0, 0.85); -webkit-text-stroke: 0px rgba(0, 0, 0, 0.85)}
+    span.s7 {font-kerning: none; color: #00005a; -webkit-text-stroke: 0px #00005a}
+    span.s8 {font-kerning: none; color: #57005a; -webkit-text-stroke: 0px #57005a}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">A Lightweight PowerShell Script to Update Google Domains’ Dynamic DNS</span></p>
+<p class="p2"><span class="s1"> </span></p>
+<p class="p2"><span class="s1">First of all, Google DNS is a fantastic deal and while it’s a little different to work with than other Domain Name providers, it’s surprisingly quick and if you’re someone who routinely specifies Google’s DNS servers to override whatever crap your ISP provides like I do (they’re 8.8.8.8 and 8.8.4.4 in case you’re wondering) changes you make through the administration page are (in my case) virtually instant.  I also haven’t noticed much of a time delay in actual propagation using various online tools to check that things were resolving correctly so there’s really no downside.  The fact that private registration is included in the fee is also pretty awesome.</span></p>
+<p class="p2"><span class="s1">Originally I only wanted a domain so I could route traffic back to my home network over a VPN but I assumed getting a static IP from my ISP would be easier (read: more affordable) than it really is.  Unfortunately, I didn’t check this <i>before</i> I purchased the domain so had a brief panic attack before realizing that Google Domains supports dynamic IP updates.</span></p>
+<p class="p2"><span class="s1">Basically, you create a subdomain name and Google creates a record for it and gives you a unique username and password.  You then use that with (ostensibly) third party dynamic DNS update clients or you can browse to a specific page and Google will use the IP you access that page from.</span></p>
+<p class="p2"><span class="s1">I figured the latter would be easier since I was having trouble with other update clients (plus with limited system resources, sadly having even a tiny dynamic DNS updater in my taskbar wasn’t worth the performance hit) and figured I’d just come up with my own way of updating things with a scheduled task.<br>
+<br>
+Turns out this is harder than it sounds.  IE on Server 2012 R2 doesn’t care to launch to a specific webpage for some reason and even more irritatingly it doesn’t consider the URL string of Google’s IP update page a valid web-address (you can’t set it as you homepage).  As I tend to do, when I think something should be simple and it turns out to have more roadblocks than necessary in the way, I get angry and don’t leave the computer screen until I have a working solution.  It’s a character flaw.</span></p>
+<p class="p2"><span class="s1">After reading up on some PowerShell commands I realized it shouldn’t be hard to have a basic .ps1 script with the username, password, and unique update URL and just have that run at hourly intervals through Task Scheduler.  Unfortunately Google’s API requires that the URL is accessed by some client that provides its browser-type.  I can see why Google requires this but it meant just using GET or POST wasn’t going to work.</span></p>
+<p class="p2"><span class="s1">Finally, after combing the web, I was able to find a way to create a browser session in PowerShell that actually reports a browsertype to the requested site.  It was late at night and I can’t find the original post – I know it was on StackExchange and I’d like to give them credit but I really can’t find it again.<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s2">$username</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s1">"USERNAMEGOESHERE"</span></p>
+<p class="p3"><span class="s2">$password</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s1">"PASSWORDGOESHERE"</span></p>
+<p class="p3"><span class="s2">$url</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s1">"https://domains.google.com/nic/update?hostname=[SUBDOMAINGOESHERE]"</span></p>
+<p class="p4"><span class="s2">$webclient</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s5">new-object</span><span class="s3"> </span><span class="s1">System.Net.WebClient</span></p>
+<p class="p4"><span class="s2">$webclient</span><span class="s4">.</span><span class="s6">Credentials</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s5">new-object</span><span class="s3"> </span><span class="s1">System.Net.NetworkCredential</span><span class="s3">(</span><span class="s2">$username</span><span class="s4">,</span><span class="s3"> </span><span class="s2">$password</span><span class="s3">)</span></p>
+<p class="p5"><span class="s1">$webpage</span><span class="s3"> </span><span class="s4">=</span><span class="s3"> </span><span class="s1">$webclient</span><span class="s4">.</span><span class="s6">DownloadString</span><span class="s3">(</span><span class="s1">$url</span><span class="s3">)</span></p>
+<p class="p5"><span class="s1">$webpage</span></p>
+<p class="p6"><span class="s1">Start-Sleep</span><span class="s3"> </span><span class="s7">-s</span><span class="s3"> </span><span class="s8">10</span></p>
+<p class="p7"><span class="s1">exit<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s1"> </span></p>
+<p class="p2"><span class="s1">Everything should be pretty self-explanatory; use the username and password Google provides when you create the dynamic DNS subdomain in the web console for the first two entries and in the [SUBDOMAIN GOES HERE] box put the subdomain you created (the whole thing, so: subdomain.yourdomain.whatever).  You can delete the <b>Start-Sleep –s 10 </b>command if you like, it’s only there for testing purposes; you won’t be able to see any errors the command returns if something’s wrong.</span></p>
+<p class="p2"><span class="s1">Then just create a scheduled task to run on whatever interval you like and point it at the .ps1 file.  Easy peasy.</span></p>
+<p class="p2"><span class="s1">Oh – if you notice it’s not running, it may be your PowerShell execution policy.  Mind the obvious security implications here, but the following command in an elevated PowerShell instance should allow the script (and any other PowerShell executable script) to run:</span></p>
+<p class="p6"><span class="s1">Set-ExecutionPolicy</span><span class="s3"> </span><span class="s7">Unrestricted</span></p>
+<p class="p8"><span class="s1"> </span></p>
+<p class="p2"><span class="s1">Best of luck and let me know if you have any problems – I can’t guarantee I’ll get back to you, but it’s always worth a shot.</span></p>
+<p class="p2"><span class="s1">P.s. if you posted on StackExchange something similar to this for another purpose, please let me know so I can put a link and reference here; I definitely wouldn’t have figured this out on my own and would like to acknowledge my sources.</span></p>
+</body>
+</html>
