@@ -6,6 +6,12 @@
 build/
 DerivedData/
 
+## Workspace file
+*.xcworkspace
+
+## MacOS stuff (misc.)
+*.DS_Store
+
 ## Various settings
 ExportOptions.plist
 *.pbxuser
